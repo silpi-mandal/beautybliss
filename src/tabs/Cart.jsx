@@ -1,17 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TouchableHighlight,
-  Image,
-} from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeItemfromCart } from '../redux/Action'; // Corrected action import
+import { addItemtoWishlist, removeItemfromCart, removeItemfromWishlist } from '../redux/Action';
+import CartItem from '../comon/CartItem';
 
 const Cart = ({ navigation }) => {
-  const products = useSelector(state => state.cart);
+  const cart = useSelector(state => state.cart);
+  console.log(cart);
   const dispatch = useDispatch();
 
   const handleItem = (id) => {
@@ -23,87 +18,32 @@ const Cart = ({ navigation }) => {
     dispatch(removeItemfromCart(index));
   };
 
+  const handleAddWishlist = (item, add) => {
+    if (add) {
+      dispatch(addItemtoWishlist(item));
+    } else {
+      dispatch(removeItemfromWishlist(item.id));
+    }
+  };
+
   return (
-    <View>
-      {products.length > 0 ? (
-        products.map((item, index) => (
-          <TouchableHighlight key={index} onPress={() => handleItem(item.id)}>
-            <View style={styles.itemContainer}>
-              <TouchableOpacity
-                style={styles.wishlistIconContainer}
-                onPress={() => handleRemoveFromCart(index)} // Corrected function call
-              >
-                <Image source={require("../image/cross.png")} style={styles.icon} />
-              </TouchableOpacity>
-              <Image source={{ uri: item.image_link }} style={styles.image} />
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.price}>${item.price}</Text>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Buy Now</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableHighlight>
-        ))
-      ) : (
-        <Text>Your cart is empty.</Text>
-      )}
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <FlatList
+        data={cart}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item, index }) => (
+          <CartItem
+            item={item}
+            onAddWishlist={handleAddWishlist}
+            navigation={() => handleItem(item.id)}
+            removefromCart={() => handleRemoveFromCart(index)}
+          />
+        )}
+      />
     </View>
   );
 };
 
 export default Cart;
 
-const styles = StyleSheet.create({
-  itemContainer: {
-    backgroundColor: '#fff',
-    padding: 10,
-    marginVertical: 10,
-    marginHorizontal: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  wishlistIconContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'transparent',
-    zIndex: 1,
-  },
-  icon: {
-    width: 24,
-    height: 24,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  price: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#e4007c',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-  },
-});
+const styles = StyleSheet.create({});

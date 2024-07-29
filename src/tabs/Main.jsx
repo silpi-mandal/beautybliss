@@ -39,8 +39,9 @@ const Main = () => {
   const [nailPolish, setNailPolish] = useState([]);
   const [lipstick, setLipstick] = useState([]);
   const [mascara, setMascara] = useState([]);
-  const data = useSelector(state => state.reducer);
-  console.log(data);
+  const cart = useSelector(state => state.cart);
+  const wishlist = useSelector(state => state.wishlist)
+  // console.log(cart,wishlist);
 
   useEffect(() => {
     const bronzerItems = api.filter(item => item.product_type === 'Bronzer');
